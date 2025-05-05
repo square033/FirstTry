@@ -1,42 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:background="#FFFFFF">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_kakao"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="카카오페이"
-        android:layout_marginBottom="12dp" />
+        android:layout_height="56dp"
+        android:text="💛 카카오페이"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#FFEB00"
+        android:layout_marginBottom="12dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_payco"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="페이코"
-        android:layout_marginBottom="12dp" />
+        android:layout_height="56dp"
+        android:text="🔴 페이코"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#D32F2F"
+        android:layout_marginBottom="12dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_toss"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="토스페이"
-        android:layout_marginBottom="12dp" />
+        android:layout_height="56dp"
+        android:text="💙 토스페이"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#1B64DA"
+        android:layout_marginBottom="12dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_naver"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="네이버페이"
-        android:layout_marginBottom="12dp" />
+        android:layout_height="56dp"
+        android:text="💚 네이버페이"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#03C75A"
+        android:layout_marginBottom="12dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_card"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="카드결제" />
+        android:layout_height="56dp"
+        android:text="💳 카드 결제"
+        android:textSize="18sp"
+        app:cornerRadius="16dp"
+        app:strokeColor="#000000"
+        app:strokeWidth="2dp"
+        android:textColor="#000000"/>
 </LinearLayout>

@@ -26,15 +26,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0") // ✅ 괄호 사용
     implementation("com.google.zxing:core:3.4.1")
-
+    implementation("com.google.android.material:material:1.11.0")
     implementation(files("libs/minewBeaconAdmin.jar"))
 
 
