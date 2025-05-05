@@ -1,38 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
-    tools:ignore="ExtraText">
+    android:padding="32dp"
+    android:background="#FAF9FB"
+    tools:context=".LoginActivity">
 
-    <!-- 전화번호 입력 + 로그인 버튼을 가로로 배치 -->
-    <LinearLayout
+    <!-- 🔢 전화번호 뒷자리 입력창 -->
+    <EditText
+        android:id="@+id/edit_phone_tail"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:hint="전화번호 뒷자리 4자리"
+        android:inputType="number"
+        android:background="@drawable/rounded_edittext"
+        android:padding="16dp"
+        android:textSize="12sp"
+        android:layout_marginTop="200dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_login"
+        app:layout_constraintHorizontal_chainStyle="packed" />
+
+    <!-- 🔐 로그인 버튼 -->
+    <Button
+        android:id="@+id/btn_login"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_height="60dp"
+        android:text="🔐 로그인"
+        android:textSize="18sp"
+        android:backgroundTint="@color/deep_navy"
+        android:textColor="#FFFFFF"
+        android:layout_marginStart="12dp"
+        app:layout_constraintTop_toTopOf="@id/edit_phone_tail"
+        app:layout_constraintBottom_toBottomOf="@id/edit_phone_tail"
+        app:layout_constraintStart_toEndOf="@id/edit_phone_tail"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <EditText
-            android:id="@+id/edit_phone_tail"
-            android:layout_width="204dp"
-            android:layout_height="wrap_content"
-            android:hint="전화번호 뒷자리 4자리"
-            android:inputType="number"
-            android:textSize="18sp" />
-
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="121dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:backgroundTint="@android:color/holo_green_dark"
-            android:text="로그인"
-            android:textSize="18sp" />
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

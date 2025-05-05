@@ -6,68 +6,139 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    tools:context=".MainActivity">
 
-    <!-- ✅ 배경 사진 -->
-    <ImageView
-        android:id="@+id/background_image"
-        android:layout_width="397dp"
-        android:layout_height="716dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/backpicture_white"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <!-- 좌측 로고 -->
+
+    <!-- 우측 로고 -->
+
+    <!-- 타이틀 텍스트 -->
+
+    <!-- 마이페이지 버튼 -->
+
+    <!-- 공지 텍스트 -->
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:fontFamily="@font/gmarketsansbold"
+        android:gravity="center"
+        android:text="까치 마트"
+        android:textAlignment="center"
+        android:textColor="@color/deep_navy"
+        android:textSize="48sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- ✅ 버튼 1: 상품검색, 지도 -->
+    <ImageView
+        android:id="@+id/logo_left"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/gacchi_logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/logo_right"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/gacchi_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/mypage_button"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="28dp"
+        android:text="👤 마이페이지"
+        android:textColor="@color/deep_navy"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_text"
+        app:strokeColor="@color/deep_navy"
+        app:strokeWidth="4dp" />
+
+    <!-- 광고 전단지 이미지 -->
+
+    <!-- 상품 및 위치 검색 버튼 -->
+
+    <!-- 결제 버튼 -->
+
+    <TextView
+        android:id="@+id/bottom_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/gmarketsanslight"
+        android:gravity="center"
+        android:text="🔥 단 7일! 오픈기념 초특가 대전 🔥 \n까치 마트 6월 10일 GRAND OPEN!\n전 품목 세일 + 경품 추첨까지!"
+        android:textAlignment="center"
+        android:textColor="@color/deep_navy"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mypage_button" />
+
+    <ImageView
+        android:id="@+id/promo_image"
+        android:layout_width="357dp"
+        android:layout_height="234dp"
+        android:layout_marginTop="20dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/backbanner_empty_copy"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.363"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottom_text" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/show_map_button"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="상품검색\n지도"
+        android:layout_height="75dp"
+        android:layout_marginTop="12dp"
+        android:padding="8dp"
+        android:text="🗺️ 상품 및 위치 검색"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:padding="12dp"
-        app:cornerRadius="24dp"
+        android:textSize="22sp"
         app:backgroundTint="@color/deep_navy"
+        app:cornerRadius="16dp"
+        app:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/payment_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontalWeight="1"
-        app:layout_constraintWidth_percent="0.3"/>
+        app:layout_constraintTop_toBottomOf="@id/promo_image" />
 
-    <!-- ✅ 버튼 2: 결제 -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/payment_button"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="결제"
+        android:layout_height="75dp"
+        android:layout_marginTop="18dp"
+        android:padding="8dp"
+        android:text="💳 결제"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:padding="12dp"
-        app:cornerRadius="24dp"
+        android:textSize="22sp"
         app:backgroundTint="@color/deep_navy"
-        app:layout_constraintStart_toEndOf="@id/show_map_button"
-        app:layout_constraintEnd_toStartOf="@+id/mypage_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontalWeight="1"
-        app:layout_constraintWidth_percent="0.3"/>
-
-    <!-- ✅ 버튼 3: 마이페이지 -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/mypage_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="마이페이지"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:padding="12dp"
-        app:cornerRadius="24dp"
-        app:backgroundTint="@color/deep_navy"
-        app:layout_constraintStart_toEndOf="@id/payment_button"
+        app:cornerRadius="16dp"
+        app:layout_constraintTop_toBottomOf="@id/show_map_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontalWeight="1"
-        app:layout_constraintWidth_percent="0.3"/>
+        app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
