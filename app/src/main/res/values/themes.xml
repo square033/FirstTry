@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.FirstTry" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- 전역 폰트 설정 -->
-        <item name="android:fontFamily">@font/KakaoSmallSans_Regular</item>
+        <item name="android:fontFamily">@font/GmarketSansTTFMedium</item>
 
         <!-- 여기에 필요한 색상, 스타일 등을 추가 가능 -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->

@@ -20,37 +20,54 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- ✅ 버튼들 -->
-    <Button
+    <!-- ✅ 버튼 1: 상품검색, 지도 -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/show_map_button"
-        android:layout_width="108dp"
-        android:layout_height="94dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="60dp"
-        android:text="상품검색, 지도"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="상품검색\n지도"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:padding="12dp"
+        app:cornerRadius="24dp"
+        app:backgroundTint="@color/deep_navy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/payment_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontalWeight="1"
+        app:layout_constraintWidth_percent="0.3"/>
 
-    <Button
+    <!-- ✅ 버튼 2: 결제 -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/payment_button"
-        android:layout_width="107dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginBottom="60dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:text="결제"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:padding="12dp"
+        app:cornerRadius="24dp"
+        app:backgroundTint="@color/deep_navy"
+        app:layout_constraintStart_toEndOf="@id/show_map_button"
+        app:layout_constraintEnd_toStartOf="@+id/mypage_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/show_map_button" />
+        app:layout_constraintHorizontalWeight="1"
+        app:layout_constraintWidth_percent="0.3"/>
 
-    <Button
+    <!-- ✅ 버튼 3: 마이페이지 -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mypage_button"
-        android:layout_width="103dp"
-        android:layout_height="98dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="60dp"
-        android:text="마이       페이지"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="마이페이지"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:padding="12dp"
+        app:cornerRadius="24dp"
+        app:backgroundTint="@color/deep_navy"
+        app:layout_constraintStart_toEndOf="@id/payment_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@id/payment_button" />
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontalWeight="1"
+        app:layout_constraintWidth_percent="0.3"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
