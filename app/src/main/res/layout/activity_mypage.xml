@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- 제목 -->
+
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="로그아웃" />
+
+        <TextView
+            android:id="@+id/mypage_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"
+            android:text="마이페이지"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- 사용자 이름 -->
+        <TextView
+            android:id="@+id/name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="이름: "
+            android:textSize="18sp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 전화번호 -->
+        <TextView
+            android:id="@+id/phone_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="전화번호: "
+            android:textSize="18sp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 포인트 -->
+        <TextView
+            android:id="@+id/point_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="보유 포인트: "
+            android:textSize="18sp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- 결제 내역 제목 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="결제 내역"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 결제 내역 리스트 -->
+        <TextView
+            android:id="@+id/history_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp" />
+
+
+    </LinearLayout>
+</ScrollView>

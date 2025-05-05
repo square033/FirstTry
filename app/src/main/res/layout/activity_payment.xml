@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_payment.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/qr_result_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QR 결제 정보"
+        android:textSize="18sp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/pay_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="간편결제" />
+
+    <Button
+        android:id="@+id/pay_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="현장결제" />
+
+</LinearLayout>

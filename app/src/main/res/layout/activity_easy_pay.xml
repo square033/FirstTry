@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <Button
+        android:id="@+id/btn_kakao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="카카오페이"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_payco"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="페이코"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_toss"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="토스페이"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_naver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="네이버페이"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="카드결제" />
+</LinearLayout>
