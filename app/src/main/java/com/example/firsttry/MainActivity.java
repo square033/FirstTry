@@ -142,14 +142,33 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // 🔁 Firebase → SQLite 회원 정보 동기화
+        // SharedPreferences는 한 번만 선언해서 아래 모두에서 재사용
+        SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
+
+        // Firebase → SQLite 회원 정보 동기화
         syncFirebaseMembersToSQLite();
 
-        Button mapBtn = findViewById(R.id.show_map_button);
-        mapBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MapActivity.class);
-            intent.putExtra("x", currentPosition[0]);
-            intent.putExtra("y", currentPosition[1]);
+        // 인텐트 → 쉐어드 순으로 이름 가져오기
+        String userName = getIntent().getStringExtra("user_name");
+        if (userName == null) {
+            userName = prefs.getString("user_name", null);
+        }
+
+        if (userName != null) {
+            Toast.makeText(this, userName + " 고객님 안녕하세요!", Toast.LENGTH_SHORT).show();
+        }
+
+        // 버튼 리스너
+        Button myPageBtn = findViewById(R.id.mypage_button);
+        myPageBtn.setOnClickListener(v -> {
+            String phoneTail = prefs.getString("phone_tail", null);
+
+            Intent intent;
+            if (phoneTail != null) {
+                intent = new Intent(MainActivity.this, MyPageActivity.class);
+            } else {
+                intent = new Intent(MainActivity.this, LoginActivity.class);
+            }
             startActivity(intent);
         });
 
@@ -159,26 +178,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        Button myPageBtn = findViewById(R.id.mypage_button);
-        myPageBtn.setOnClickListener(v -> {
-            SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
-            String phoneTail = prefs.getString("phone_tail", null);
-
-            Intent intent;
-            if (phoneTail != null) {
-                // 이미 로그인되어 있으면 마이페이지로 이동
-                intent = new Intent(MainActivity.this, MyPageActivity.class);
-            } else {
-                // 로그인 안되어 있으면 로그인 화면으로 이동
-                intent = new Intent(MainActivity.this, LoginActivity.class);
-            }
-
-            startActivity(intent);
-        });
-
         checkAndRequestPermissions();  // 🔔 위치 권한 및 비콘 스캔 시작
     }
-
 
     private void checkAndRequestPermissions() {
         List<String> permissions = new ArrayList<>();
@@ -282,9 +283,13 @@ public class MainActivity extends AppCompatActivity {
                     String name = child.child("name").getValue(String.class);
                     String phone = child.child("phone").getValue(String.class);
 
-                    if (!dbHelper.checkUserByPhoneTail(phone)) {
-                        dbHelper.insertUser(name, phone);
-                        Log.d("동기화", "Firebase → SQLite 등록됨: " + name + ", " + phone);
+                    if (phone != null && phone.length() >= 4) {
+                        String tail = phone.substring(phone.length() - 4); // 뒷자리 추출
+
+                        if (!dbHelper.checkUserByPhoneTail(tail)) {
+                            dbHelper.insertUser(name, tail, phone);  // ✅ 전체 번호도 같이 저장
+                            Log.d("동기화", "Firebase → SQLite 등록됨: " + name + ", " + tail + ", " + phone);
+                        }
                     }
                 }
             }

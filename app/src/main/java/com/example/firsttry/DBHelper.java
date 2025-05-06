@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "User.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -21,6 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "name TEXT," +
                 "phone_tail TEXT," +
+                "phone_full TEXT," +
                 "point INTEGER DEFAULT 0)";
         db.execSQL(createUserTable);
 
@@ -45,11 +46,12 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // 사용자 등록
-    public void insertUser(String name, String phoneTail) {
+    public void insertUser(String name, String phoneTail, String phoneFull) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("name", name);
         values.put("phone_tail", phoneTail);
+        values.put("phone_full", phoneFull);
         db.insert("users", null, values);
         db.close();
     }
@@ -62,6 +64,39 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return exists;
+    }
+
+    // 전화번호 뒷자리 중복 사용자 수 확인
+    public int countUsersByPhoneTail(String phoneTail) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM users WHERE phone_tail = ?", new String[]{phoneTail});
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    // 전체 전화번호 확인 (예: '01012345678')
+    public boolean checkUserByFullPhone(String fullPhone) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE phone_full = ?", new String[]{fullPhone});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+
+    public String getUserNameByFullPhone(String fullPhone) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT name FROM users WHERE phone_full = ?", new String[]{fullPhone});
+        String name = null;
+        if (cursor.moveToFirst()) {
+            name = cursor.getString(0);
+        }
+        cursor.close();
+        return name;
     }
 
     // 사용자 이름 불러오기
@@ -94,9 +129,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE users SET point = point + ? WHERE phone_tail = ?", new Object[]{pointToAdd, phoneTail});
         db.close();
     }
-
-
-
 
     public void insertPayment(String paymentId, String userPhoneTail, String item, int amount, String date, String method) {
         SQLiteDatabase db = this.getWritableDatabase();

@@ -45,6 +45,7 @@
         <activity android:name=".PaymentActivity"/>
         <activity android:name=".ReceiptActivity" />
         <activity android:name=".EasyPayActivity" />
+        <activity android:name=".FullPhoneLoginActivity" />
 
 
 
