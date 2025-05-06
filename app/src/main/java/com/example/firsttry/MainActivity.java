@@ -26,6 +26,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class MainActivity extends AppCompatActivity {
 
     private double[] currentPosition = new double[]{-1, -1};
@@ -136,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        // 🔁 Firebase → SQLite 회원 정보 동기화
+        syncFirebaseMembersToSQLite();
 
         Button mapBtn = findViewById(R.id.show_map_button);
         mapBtn.setOnClickListener(v -> {
@@ -150,11 +158,11 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, QRscanActivity.class);
             startActivity(intent);
         });
+
         Button myPageBtn = findViewById(R.id.mypage_button);
         myPageBtn.setOnClickListener(v -> {
             SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
             String phoneTail = prefs.getString("phone_tail", null);
-
 
             Intent intent;
             if (phoneTail != null) {
@@ -168,10 +176,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-
-
-        checkAndRequestPermissions();
+        checkAndRequestPermissions();  // 🔔 위치 권한 및 비콘 스캔 시작
     }
+
 
     private void checkAndRequestPermissions() {
         List<String> permissions = new ArrayList<>();
@@ -224,8 +231,6 @@ public class MainActivity extends AppCompatActivity {
         beaconManager.startScan();
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -264,5 +269,31 @@ public class MainActivity extends AppCompatActivity {
             Log.d("블루투스 상태", "현재 상태: " + state.toString());
         }
         }
+
+    private void syncFirebaseMembersToSQLite() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("members");
+        DBHelper dbHelper = new DBHelper(this);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String id = child.getKey();
+                    String name = child.child("name").getValue(String.class);
+                    String phone = child.child("phone").getValue(String.class);
+
+                    if (!dbHelper.checkUserByPhoneTail(phone)) {
+                        dbHelper.insertUser(name, phone);
+                        Log.d("동기화", "Firebase → SQLite 등록됨: " + name + ", " + phone);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "회원 정보 불러오기 실패: " + error.getMessage());
+            }
+        });
+    }
 }
 

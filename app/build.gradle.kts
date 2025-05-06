@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -36,8 +38,14 @@ dependencies {
     implementation("com.google.zxing:core:3.4.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation(files("libs/minewBeaconAdmin.jar"))
-
-
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-analytics")
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
     implementation("org.greenrobot:eventbus:3.0.0")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation ("org.apache.commons:commons-math3:3.6.1")
