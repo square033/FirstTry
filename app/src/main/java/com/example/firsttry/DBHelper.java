@@ -124,17 +124,30 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return point;
     }
+
+    public int getUserPointByFullPhone(String phoneFull) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT point FROM users WHERE phone_full = ?", new String[]{phoneFull});
+        int point = 0;
+        if (cursor.moveToFirst()) {
+            point = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return point;
+    }
+
     public void addUserPoint(String phoneTail, int pointToAdd) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE users SET point = point + ? WHERE phone_tail = ?", new Object[]{pointToAdd, phoneTail});
         db.close();
     }
 
-    public void insertPayment(String paymentId, String userPhoneTail, String item, int amount, String date, String method) {
+    public void insertPayment(String paymentId, String userPhoneFull, String item, int amount, String date, String method) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("payment_id", paymentId);
-        values.put("user_id", userPhoneTail);
+        values.put("user_id", userPhoneFull);
         values.put("item", item);
         values.put("amount", amount);
         values.put("date", date);
@@ -145,8 +158,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     // 사용자 결제 내역 반환
-    public Cursor getUserPayments(String userPhoneTail) {
+    public Cursor getUserPayments(String userPhoneFull) {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM payments WHERE user_id = ?", new String[]{userPhoneTail});
+        return db.rawQuery("SELECT * FROM payments WHERE user_id = ?", new String[]{userPhoneFull});
     }
 }

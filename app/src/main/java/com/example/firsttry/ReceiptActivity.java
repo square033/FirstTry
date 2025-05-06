@@ -23,7 +23,8 @@ public class ReceiptActivity extends AppCompatActivity {
 
     private TextView receiptView;
     private DBHelper dbHelper;
-    private String userPhoneTail;
+    //private String userPhoneTail;
+    private String userPhoneFull;
     private JSONArray items;
     private int totalAmount;
     private String date;
@@ -37,8 +38,9 @@ public class ReceiptActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
 
         SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
-        userPhoneTail = prefs.getString("phone_tail", null);
-        if (userPhoneTail == null) {
+        //userPhoneTail = prefs.getString("phone_tail", null);
+        userPhoneFull = prefs.getString("phone_full", null);
+        if (userPhoneFull == null) {
             receiptView.setText("\u26a0\ufe0f 로그인 정보 없음");
             return;
         }
@@ -117,12 +119,12 @@ public class ReceiptActivity extends AppCompatActivity {
 
                 // 항목명에 [결제수단] 포함 없애지기
                 String itemText = method.equals("현장결제") ? name + " x" + qty : name + " x" + qty + " [" + method + "]";
-                dbHelper.insertPayment(paymentId, userPhoneTail, itemText, sum, date, method);
+                dbHelper.insertPayment(paymentId, userPhoneFull, itemText, sum, date, method);
 
                 totalPoint += sum / 20;  // 5% 적립
             }
 
-            dbHelper.addUserPoint(userPhoneTail, totalPoint);
+            dbHelper.addUserPoint(userPhoneFull, totalPoint);
 
             Toast.makeText(this, method + " 완료 및 저장됨!", Toast.LENGTH_LONG).show();
 

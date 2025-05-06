@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
                     if (phone != null && phone.length() >= 4) {
                         String tail = phone.substring(phone.length() - 4); // 뒷자리 추출
 
-                        if (!dbHelper.checkUserByPhoneTail(tail)) {
+                        if (!dbHelper.checkUserByFullPhone(phone)) {
                             dbHelper.insertUser(name, tail, phone);  // ✅ 전체 번호도 같이 저장
                             Log.d("동기화", "Firebase → SQLite 등록됨: " + name + ", " + tail + ", " + phone);
                         }

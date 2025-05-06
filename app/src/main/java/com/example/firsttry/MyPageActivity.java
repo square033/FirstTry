@@ -13,7 +13,6 @@ public class MyPageActivity extends AppCompatActivity {
 
     private TextView nameText, phoneText, pointText, historyText;
     private DBHelper dbHelper;
-    private String loggedInUserPhoneTail;// 로그인 시 저장된 사용자 ID를 불러와야 함
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,30 +25,27 @@ public class MyPageActivity extends AppCompatActivity {
         historyText = findViewById(R.id.history_text);
 
         SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
-        loggedInUserPhoneTail = prefs.getString("phone_tail", null);
+        String phoneFull = prefs.getString("phone_full", null);
 
-        if (loggedInUserPhoneTail == null) {
-            // 저장된 로그인 정보 없음 → 로그인 화면으로 이동
+        if (phoneFull == null) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
             return;
         }
 
-
         dbHelper = new DBHelper(this);
+
         Button logoutBtn = findViewById(R.id.btn_logout);
         logoutBtn.setOnClickListener(v -> logout());
 
-
-        loadUserInfo();
-        loadPaymentHistory();
+        loadUserInfo(phoneFull);  // ✅ phone_full 전달
+        loadPaymentHistory(phoneFull);
     }
+
     private void logout() {
         SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.apply();
+        prefs.edit().clear().apply();
 
         Intent intent = new Intent(MyPageActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -57,13 +53,13 @@ public class MyPageActivity extends AppCompatActivity {
         finish();
     }
 
-    private void loadUserInfo() {
+    private void loadUserInfo(String phoneFull) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE phone_tail = ?", new String[]{loggedInUserPhoneTail});
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE phone_full = ?", new String[]{phoneFull});
 
         if (cursor.moveToFirst()) {
             String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-            String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone_tail"));
+            String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone_full"));
             int point = cursor.getInt(cursor.getColumnIndexOrThrow("point"));
 
             nameText.setText("이름: " + name);
@@ -73,9 +69,9 @@ public class MyPageActivity extends AppCompatActivity {
         cursor.close();
     }
 
-    private void loadPaymentHistory() {
+    private void loadPaymentHistory(String phoneFull) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT payment_id FROM payments WHERE user_id = ? ORDER BY date DESC", new String[]{loggedInUserPhoneTail});
+        Cursor cursor = db.rawQuery("SELECT DISTINCT payment_id FROM payments WHERE user_id = ? ORDER BY date DESC", new String[]{phoneFull});
         StringBuilder history = new StringBuilder();
 
         while (cursor.moveToNext()) {
@@ -96,8 +92,7 @@ public class MyPageActivity extends AppCompatActivity {
                 items.append(item).append(" - ").append(amount).append("원\n");
             }
 
-            int point = total / 20; // 예: 5% 적립
-
+            int point = total / 20;
             history.append("📅 ").append(date).append("\n")
                     .append(items)
                     .append("총액: ").append(total).append("원\n")
@@ -110,6 +105,4 @@ public class MyPageActivity extends AppCompatActivity {
         cursor.close();
         historyText.setText(history.toString());
     }
-
-
 }

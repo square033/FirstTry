@@ -19,7 +19,8 @@ import java.util.Locale;
 public class EasyPayActivity extends AppCompatActivity {
 
     private DBHelper dbHelper;
-    private String userPhoneTail;
+    //private String userPhoneTail;
+    private String userPhoneFull;
     private JSONArray items;
     private String date;
 
@@ -31,8 +32,8 @@ public class EasyPayActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
 
         SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
-        userPhoneTail = prefs.getString("phone_tail", null);
-        if (userPhoneTail == null) {
+        String userPhoneFull = prefs.getString("phone_full", null);
+        if (userPhoneFull == null) {
             Toast.makeText(this, "로그인 정보 없음", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -71,12 +72,12 @@ public class EasyPayActivity extends AppCompatActivity {
                 int sum = qty * price;
 
                 String itemText = name + " x" + qty + " [" + method + "]";
-                dbHelper.insertPayment(paymentId, userPhoneTail, itemText, sum, date, method);
+                dbHelper.insertPayment(paymentId, userPhoneFull, itemText, sum, date, method);
 
                 totalPoint += sum / 20; // 5% 적립
             }
 
-            dbHelper.addUserPoint(userPhoneTail, totalPoint);
+            dbHelper.addUserPoint(userPhoneFull, totalPoint);
 
             Toast.makeText(this, method + " 완료!", Toast.LENGTH_LONG).show();
 

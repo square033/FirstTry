@@ -42,6 +42,7 @@ public class FullPhoneLoginActivity extends AppCompatActivity {
                 SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
                 prefs.edit()
                         .putString("phone_tail", tail)
+                        .putString("phone_full", fullPhone)
                         .putString("user_name", name)  // 🔥 이름도 저장
                         .apply();
 
