@@ -88,6 +88,17 @@ public class DBHelper extends SQLiteOpenHelper {
         return exists;
     }
 
+    public String getUserFullPhone(String phoneTail) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT phone_full FROM users WHERE phone_tail = ?", new String[]{phoneTail});
+        String phoneFull = null;
+        if (cursor.moveToFirst()) {
+            phoneFull = cursor.getString(0);
+        }
+        cursor.close();
+        return phoneFull;
+    }
+
     public String getUserNameByFullPhone(String fullPhone) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT name FROM users WHERE phone_full = ?", new String[]{fullPhone});

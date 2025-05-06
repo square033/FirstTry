@@ -1,28 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/productSearchInput"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="상품명을 입력하세요"/>
+            android:textSize="18sp"
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/deep_navy"
+            android:textSize="20sp"
+            android:text="검색"/>
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <!-- 도면 이미지 -->
         <ImageView
             android:id="@+id/map_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/map"
-            android:scaleType="fitXY" android:contentDescription="지도 이미지" />
+            android:scaleType="fitXY"
+            android:src="@drawable/map" />
 
-        <!-- 내 위치 표시용 빨간 점 -->
+        <com.example.firsttry.MapCanvasView
+            android:id="@+id/map_canvas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <View
             android:id="@+id/position_dot"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:background="@drawable/red_dot"
             android:visibility="invisible" />
+
     </FrameLayout>
 
 </LinearLayout>

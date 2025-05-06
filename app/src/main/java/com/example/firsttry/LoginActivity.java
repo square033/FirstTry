@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         // ✅ 2. 로그인 처리
         findViewById(R.id.btn_login).setOnClickListener(v -> {
             String phoneTail = editPhoneTail.getText().toString().trim();
+            String phoneFull = dbHelper.getUserFullPhone(phoneTail);
 
             if (phoneTail.length() != 4) {
                 Toast.makeText(this, "전화번호 뒷자리 4자리를 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -62,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
                 prefs.edit()
                         .putString("phone_tail", phoneTail)
+                        .putString("phone_full", phoneFull)
                         .putString("user_name", name)  // ✅ 여기에 저장해야 MainActivity에서 쓸 수 있어!
                         .apply();
 

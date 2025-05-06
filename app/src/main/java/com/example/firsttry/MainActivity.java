@@ -172,6 +172,17 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        Button showMapButton = findViewById(R.id.show_map_button);
+        showMapButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MapActivity.class);
+            intent.putExtra("x", 2.0);  // 초기 좌표 (원하면 currentPosition[0] 등 넣어도 됨)
+            intent.putExtra("y", 1.0);
+            //실제좌표넘기기
+            //intent.putExtra("x", currentPosition[0]);
+            //intent.putExtra("y", currentPosition[1]);
+            startActivity(intent);
+        });
+
         Button paymentBtn = findViewById(R.id.payment_button);
         paymentBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QRscanActivity.class);
