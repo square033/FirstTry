@@ -17,16 +17,31 @@ import java.util.*;
 public class MapCanvasView extends View {
 
     private static final int[][] GRID_MAP = {
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 1, 1, 1, 1, 1, 0, 1, 1, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 1, 1, 1, 0, 0, 1, 0, 1, 1},
-            {1, 1, 0, 1, 0, 0, 1, 1, 1, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 1, 1, 1, 1, 0, 1, 1, 1, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1}
     };
 
     private int cellSize;
@@ -42,7 +57,7 @@ public class MapCanvasView extends View {
         super(context, attrs);
 
         wallPaint = new Paint();
-        wallPaint.setColor(Color.YELLOW);
+        wallPaint.setColor(Color.BLACK);
 
         pathPaint = new Paint();
         pathPaint.setColor(Color.BLUE);
@@ -53,10 +68,10 @@ public class MapCanvasView extends View {
         markerBitmap = scaleBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_cart), 32, context);
         flagBitmap = scaleBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_flag), 32, context);
 
-        productMap.put("딸기", new int[]{1, 6});
-        productMap.put("우유", new int[]{4, 7});
-        productMap.put("초코송이", new int[]{5, 2});
-        productMap.put("돼지고기", new int[]{8, 5});
+        //productMap.put("딸기", new int[]{1, 6});
+        //productMap.put("우유", new int[]{4, 7});
+        //productMap.put("초코송이", new int[]{5, 2});
+        //productMap.put("돼지고기", new int[]{8, 5});
     }
 
     private Bitmap scaleBitmap(Bitmap bitmap, int dp, Context context) {
@@ -68,16 +83,21 @@ public class MapCanvasView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        cellSize = getWidth() / 10;
 
-        for (int row = 0; row < 10; row++) {
-            for (int col = 0; col < 10; col++) {
+        int rowCount = GRID_MAP.length;
+        int colCount = GRID_MAP[0].length;
+
+        cellSize = Math.min(getWidth() / colCount, getHeight() / rowCount);
+
+        for (int row = 0; row < rowCount; row++) {
+            for (int col = 0; col < colCount; col++) {
                 if (GRID_MAP[row][col] == 1) {
                     canvas.drawRect(col * cellSize, row * cellSize,
                             (col + 1) * cellSize, (row + 1) * cellSize, wallPaint);
                 }
             }
         }
+
 
         int maxSteps = Math.round(path.size() * pathProgress);
         for (int i = 0; i < maxSteps - 1; i++) {
@@ -134,14 +154,17 @@ public class MapCanvasView extends View {
     }
 
     private List<int[]> bfs(int[] start, int[] goal) {
-        boolean[][] visited = new boolean[10][10];
+        int rowCount = GRID_MAP.length;
+        int colCount = GRID_MAP[0].length;
+
+        boolean[][] visited = new boolean[rowCount][colCount];
         Map<String, String> parent = new HashMap<>();
         Queue<int[]> queue = new LinkedList<>();
 
         queue.offer(start);
         visited[start[0]][start[1]] = true;
 
-        int[][] dirs = {{-1,0},{1,0},{0,-1},{0,1}};
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
@@ -150,7 +173,7 @@ public class MapCanvasView extends View {
             for (int[] d : dirs) {
                 int nr = cur[0] + d[0];
                 int nc = cur[1] + d[1];
-                if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10
+                if (nr >= 0 && nr < rowCount && nc >= 0 && nc < colCount
                         && !visited[nr][nc] && GRID_MAP[nr][nc] == 0) {
                     visited[nr][nc] = true;
                     parent.put(nr + "," + nc, cur[0] + "," + cur[1]);
@@ -178,7 +201,10 @@ public class MapCanvasView extends View {
     }
 
     public void setCurrentPosition(int row, int col) {
-        currentPos = new int[]{row, col};
-        invalidate();
+        boolean inBounds = row >= 0 && row < GRID_MAP.length && col >= 0 && col < GRID_MAP[0].length;
+        if (inBounds) {
+            currentPos = new int[]{row, col};
+            invalidate();
+        }
     }
 }
