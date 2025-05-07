@@ -42,7 +42,7 @@ public class MapCanvasView extends View {
         super(context, attrs);
 
         wallPaint = new Paint();
-        wallPaint.setColor(Color.GRAY);
+        wallPaint.setColor(Color.YELLOW);
 
         pathPaint = new Paint();
         pathPaint.setColor(Color.BLUE);
