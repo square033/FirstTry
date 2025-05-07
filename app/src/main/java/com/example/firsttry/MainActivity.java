@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private double[] currentPosition = new double[]{-1, -1};
@@ -192,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        checkAndRequestPermissions();  // 🔔 위치 권한 및 비콘 스캔 시작
+        checkAndRequestPermissions();  // 위치 권한 및 비콘 스캔 시작
     }
 
     private void checkAndRequestPermissions() {
@@ -276,6 +277,8 @@ public class MainActivity extends AppCompatActivity {
                 List<MinewBeacon> used = validBeacons.subList(0, Math.min(validBeacons.size(), 8));
 
                 currentPosition = calculateMultilaterationPosition(used);
+                GlobalLocation.x = currentPosition[0];
+                GlobalLocation.y = currentPosition[1];
 
                 Log.d("내위치", "다중 위치: (" + currentPosition[0] + ", " + currentPosition[1] + ")");
             }
