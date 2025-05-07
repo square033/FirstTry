@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                         .putString("phone_tail", phoneTail)
                         .putString("phone_full", phoneFull)
                         .putString("user_name", name)  // ✅ 여기에 저장해야 MainActivity에서 쓸 수 있어!
+                        .putBoolean("just_logged_in", true)
                         .apply();
 
                 Intent intent = new Intent(this, MainActivity.class);

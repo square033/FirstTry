@@ -81,7 +81,10 @@ public class ReceiptActivity extends AppCompatActivity {
         findViewById(R.id.btn_easy).setOnClickListener(v -> {
             Intent intent = new Intent(ReceiptActivity.this, EasyPayActivity.class);
             intent.putExtra("qr_json", getIntent().getStringExtra("qr_json"));
+            intent.putExtra("user_phone", userPhoneFull);   // ✅ 추가
+            intent.putExtra("date", date);
             startActivity(intent);
+            finish();
         });
     }
 
@@ -124,9 +127,9 @@ public class ReceiptActivity extends AppCompatActivity {
                 totalPoint += sum / 20;  // 5% 적립
             }
 
-            dbHelper.addUserPoint(userPhoneFull, totalPoint);
+            dbHelper.addUserPointByFullPhone(userPhoneFull, totalPoint);
 
-            Toast.makeText(this, method + " 완료 및 저장됨!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, method + " 완료!", Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(ReceiptActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

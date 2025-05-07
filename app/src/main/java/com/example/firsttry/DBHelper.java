@@ -122,6 +122,11 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return name;
     }
+    public void addUserPointByFullPhone(String phoneFull, int pointToAdd) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE users SET point = point + ? WHERE phone_full = ?", new Object[]{pointToAdd, phoneFull});
+        db.close();
+    }
 
     // 사용자 포인트 불러오기
     public int getUserPoint(String phoneTail) {

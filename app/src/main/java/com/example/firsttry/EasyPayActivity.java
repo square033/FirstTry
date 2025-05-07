@@ -32,7 +32,7 @@ public class EasyPayActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
 
         SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
-        String userPhoneFull = prefs.getString("phone_full", null);
+        userPhoneFull = prefs.getString("phone_full", null);
         if (userPhoneFull == null) {
             Toast.makeText(this, "로그인 정보 없음", Toast.LENGTH_SHORT).show();
             finish();
@@ -71,13 +71,13 @@ public class EasyPayActivity extends AppCompatActivity {
                 int price = item.getInt("price");
                 int sum = qty * price;
 
-                String itemText = name + " x" + qty + " [" + method + "]";
+                String itemText = name + " x" + qty ;
                 dbHelper.insertPayment(paymentId, userPhoneFull, itemText, sum, date, method);
 
                 totalPoint += sum / 20; // 5% 적립
             }
 
-            dbHelper.addUserPoint(userPhoneFull, totalPoint);
+            dbHelper.addUserPointByFullPhone(userPhoneFull, totalPoint);
 
             Toast.makeText(this, method + " 완료!", Toast.LENGTH_LONG).show();
 

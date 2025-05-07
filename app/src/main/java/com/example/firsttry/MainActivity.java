@@ -154,8 +154,11 @@ public class MainActivity extends AppCompatActivity {
             userName = prefs.getString("user_name", null);
         }
 
-        if (userName != null) {
+        boolean justLoggedIn = prefs.getBoolean("just_logged_in", false);
+
+        if (userName != null && justLoggedIn) {
             Toast.makeText(this, userName + " 고객님 안녕하세요!", Toast.LENGTH_SHORT).show();
+            prefs.edit().putBoolean("just_logged_in", false).apply();
         }
 
         // 버튼 리스너
