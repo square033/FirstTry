@@ -47,11 +47,6 @@
         <activity android:name=".EasyPayActivity" />
         <activity android:name=".FullPhoneLoginActivity" />
 
-
-
-
-
-
         <service android:name="com.minew.beaconset.ConnectService" />
 
     <receiver android:name="com.minew.beaconset.BluetoothChangedReceiver"

@@ -4,17 +4,19 @@ public class GlobalLocation {
     public static double x = -1;
     public static double y = -1;
 
-    public static int row = -1;
-    public static int col = -1;
+    public static int gridRow = -1;
+    public static int gridCol = -1;
 
-    public static int[] toPixel(int cellWidth, int cellHeight) {
-        int px = col * cellWidth + cellWidth / 2;
-        int py = row * cellHeight + cellHeight / 2;
-        return new int[]{px, py};
+    public static void updateGridPosition(double xCoord, double yCoord, double cellSize) {
+        x = xCoord;
+        y = yCoord;
+        gridRow = (int)(yCoord / cellSize);
+        gridCol = (int)(xCoord / cellSize);
     }
 
-    public static void updateGridPosition(double meterX, double meterY, double cellMeterSize) {
-        col = (int)(meterX / cellMeterSize);
-        row = (int)(meterY / cellMeterSize);
+    public static int[] toPixel(int cellWidth, int cellHeight) {
+        int px = gridCol * cellWidth + cellWidth / 2;
+        int py = gridRow * cellHeight + cellHeight / 2;
+        return new int[]{px, py};
     }
 }
