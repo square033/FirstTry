@@ -49,7 +49,6 @@ dependencies {
     implementation("org.greenrobot:eventbus:3.0.0")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation ("org.apache.commons:commons-math3:3.6.1")
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

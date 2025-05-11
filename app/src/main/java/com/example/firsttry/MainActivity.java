@@ -23,6 +23,8 @@ import com.minew.beaconset.MinewBeaconConnection;
 import com.minew.beaconset.MinewBeaconManager;
 import com.minew.beaconset.MinewBeaconManagerListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,109 +34,94 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 public class MainActivity extends AppCompatActivity {
-
-    private double[] currentPosition = new double[]{-1, -1};
-    private double[] lastPosition = new double[]{-1, -1};
-
     private static final int PERMISSION_REQUEST_CODE = 100;
-
     private MinewBeaconManager beaconManager;
-    private MinewBeaconConnection beaconConnection;
+    private String lastDetectedZone = null;
 
-    static class BeaconInfo {
-        String macAddress;
-        double x, y;
 
-        public BeaconInfo(String macAddress, double x, double y) {
-            this.macAddress = macAddress;
-            this.x = x;
-            this.y = y;
+
+    private final HashMap<String, String> beaconToZoneMap = new HashMap<>() {{
+        put("C3:00:00:3F:C5:A1", "A");
+        put("C3:00:00:3F:C5:A2", "B");
+        put("C3:00:00:3F:C5:A3", "C");
+        put("C3:00:00:35:97:DA", "D");
+        put("C3:00:00:35:97:D7", "E");
+        put("C3:00:00:3F:97:D9", "F");
+        put("C3:00:00:35:97:F0", "G");
+        put("C3:00:00:3F:97:EF", "H");
+    }};
+    private final HashMap<String, int[]> zoneGridMap = new HashMap<>() {{
+        put("A", new int[]{1, 74});  // (y, x)
+        put("B", new int[]{11, 68});
+        put("C", new int[]{33, 75});
+        put("D", new int[]{65, 70});
+        put("E", new int[]{90, 76});
+        put("F", new int[]{125, 65});
+        put("G", new int[]{121, 50});
+        put("H", new int[]{120, 9});
+    }};
+
+    private class MyMinewBeaconManagerListener implements MinewBeaconManagerListener {
+        @Override
+        public void onUpdateBluetoothState(BluetoothState bluetoothState) {
+
         }
-    }
-    // 거리 필터용 맵 (MAC 주소 기준)
-    private final HashMap<String, Double> filteredDistanceMap = new HashMap<>();
 
-    // 로우패스 필터 적용 함수
-    private final List<BeaconInfo> beaconMap = List.of(
-            new BeaconInfo("C3:00:00:3F:C5:A1", 0.0, 0.0),
-            new BeaconInfo("C3:00:00:3F:C5:A2", 3.2,0),
-            new BeaconInfo("C3:00:00:3F:C5:A3", 6.4, 0),
-            new BeaconInfo("C3:00:00:35:97:DA", 0, 3.2),
-            new BeaconInfo("C3:00:00:35:97:D7", 6.4,3.2),
-            new BeaconInfo("C3:00:00:3F:97:D9", 0, 6.4),
-            new BeaconInfo("C3:00:00:35:97:F0", 3.2,6.4),
-            new BeaconInfo("C3:00:00:3F:97:EF", 6.4, 6.4)
-    );
+        @Override
+        public void onAppearBeacons(List<MinewBeacon> list) {
 
-
-    private double applyLowPassFilter(String macAddress, double rawDistance, double alpha) {
-        double filtered = rawDistance;
-        if (filteredDistanceMap.containsKey(macAddress)) {
-            double previous = filteredDistanceMap.get(macAddress);
-            filtered = previous + alpha * (rawDistance - previous);
         }
-        filteredDistanceMap.put(macAddress, filtered);
-        return filtered;
-    }
+
+        @Override
+        public void onDisappearBeacons(List<MinewBeacon> list) {
+
+        }
+
+        @Override
+        public void onRangeBeacons(List<MinewBeacon> beacons) {
+            if (beacons == null || beacons.isEmpty()) return;
+
+            // 비콘 목록 중, 내가 정의한 것만 필터링
+            List<MinewBeacon> validBeacons = new ArrayList<>();
+            for (MinewBeacon beacon : beacons) {
+                if (beaconToZoneMap.containsKey(beacon.getMacAddress())) {
+                    validBeacons.add(beacon);
+                }
+            }
+
+            if (!validBeacons.isEmpty()) {
+                // 가장 가까운 비콘 1개
+                Collections.sort(validBeacons, new Comparator<MinewBeacon>() {
+                    @Override
+                    public int compare(MinewBeacon b1, MinewBeacon b2) {
+                        return Double.compare(b1.getDistance(), b2.getDistance());
+                    }
+                });
+                MinewBeacon nearest = validBeacons.get(0);
+                String mac = nearest.getMacAddress();
+
+                String zone = beaconToZoneMap.get(mac);
+                if (zone != null) {
+                    int[] gridCoord = zoneGridMap.get(zone);
+
+                    Log.d("현재 위치", "가장 가까운 비콘은 " + mac + " → " + zone + " 구역입니다.");
+                    Log.d("현재 위치 좌표", "(" + gridCoord[1] + ", " + gridCoord[0] + ")");  // x, y
+                    lastDetectedZone = zone;
+
+                    SharedPreferences prefs = getSharedPreferences("location_pref", MODE_PRIVATE);
+                    prefs.edit()
+                            .putInt("current_x", gridCoord[1])
+                            .putInt("current_y", gridCoord[0])
+                            .apply();
 
 
-    private BeaconInfo findBeaconInfoByMac(String mac) {
-        for (BeaconInfo info : beaconMap) {
-            if (info.macAddress.equalsIgnoreCase(mac)) {
-                return info;
+                      }
             }
         }
-        return null;
+
     }
-    private double[] calculateMultilaterationPosition(List<MinewBeacon> beacons) {
-        if (beacons.size() < 3) return lastPosition;
-
-        MinewBeacon refBeacon = beacons.get(0);
-        BeaconInfo ref = findBeaconInfoByMac(refBeacon.getMacAddress());
-        double d0 = applyLowPassFilter(refBeacon.getMacAddress(), refBeacon.getDistance(), 0.2);
-
-        int N = beacons.size();
-        double[][] A = new double[N - 1][2];
-        double[] b = new double[N - 1];
-
-        for (int i = 1; i < N; i++) {
-            MinewBeacon bcn = beacons.get(i);
-            BeaconInfo bi = findBeaconInfoByMac(bcn.getMacAddress());
-            double di = applyLowPassFilter(bcn.getMacAddress(), bcn.getDistance(), 0.2);
-
-            A[i - 1][0] = 2 * (bi.x - ref.x);
-            A[i - 1][1] = 2 * (bi.y - ref.y);
-            b[i - 1] = Math.pow(d0, 2) - Math.pow(di, 2)
-                    - Math.pow(ref.x, 2) + Math.pow(bi.x, 2)
-                    - Math.pow(ref.y, 2) + Math.pow(bi.y, 2);
-        }
-
-        double x = 0, y = 0;
-        try {
-            org.apache.commons.math3.linear.RealMatrix AMatrix = new org.apache.commons.math3.linear.Array2DRowRealMatrix(A);
-            org.apache.commons.math3.linear.RealVector bVector = new org.apache.commons.math3.linear.ArrayRealVector(b);
-            org.apache.commons.math3.linear.RealVector solution =
-                    new org.apache.commons.math3.linear.QRDecomposition(AMatrix).getSolver().solve(bVector);
-
-            x = solution.getEntry(0);
-            y = solution.getEntry(1);
-        } catch (Exception e) {
-            Log.w("위치오류", "위치 계산 실패: " + e.getMessage());
-            return lastPosition;
-        }
-
-        // 칼만 필터 제거하고 그대로 반환하고 싶으면 아래 주석처리
-        // double filteredX = kalmanX.update(x);
-        // double filteredY = kalmanY.update(y);
-        // lastPosition[0] = filteredX;
-        // lastPosition[1] = filteredY;
-
-        lastPosition[0] = x;
-        lastPosition[1] = y;
-        return new double[]{x, y};
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,14 +164,21 @@ public class MainActivity extends AppCompatActivity {
 
         Button showMapButton = findViewById(R.id.show_map_button);
         showMapButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MapActivity.class);
-            intent.putExtra("x", 2.0);  // 초기 좌표 (원하면 currentPosition[0] 등 넣어도 됨)
-            intent.putExtra("y", 1.0);
-            //실제좌표넘기기
-            //intent.putExtra("x", currentPosition[0]);
-            //intent.putExtra("y", currentPosition[1]);
-            startActivity(intent);
+            if (lastDetectedZone != null) {
+                int[] coord = zoneGridMap.get(lastDetectedZone);
+                if (coord != null) {
+                    Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                    intent.putExtra("current_x", coord[1]);  // x
+                    intent.putExtra("current_y", coord[0]);  // y
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "위치 좌표를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "위치를 아직 인식하지 못했어요!", Toast.LENGTH_SHORT).show();
+            }
         });
+
 
         Button paymentBtn = findViewById(R.id.payment_button);
         paymentBtn.setOnClickListener(v -> {
@@ -250,40 +244,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (beaconManager != null) beaconManager.stopScan();
-        if (beaconConnection != null) beaconConnection.disconnect();
     }
 
-    private class MyMinewBeaconManagerListener implements MinewBeaconManagerListener {
-        @Override public void onAppearBeacons(List<MinewBeacon> list) {}
-        @Override public void onDisappearBeacons(List<MinewBeacon> list) {}
-
-        @Override
-        public void onRangeBeacons(List<MinewBeacon> list) {
-            List<MinewBeacon> validBeacons = new ArrayList<>();
-            for (MinewBeacon beacon : list) {
-                for (BeaconInfo info : beaconMap) {
-                    if (beacon.getMacAddress().equalsIgnoreCase(info.macAddress)) {
-                        validBeacons.add(beacon);
-                    }
-                }
-            }
-
-            if (validBeacons.size() >= 3) {
-                // 거리 기준 정렬
-                validBeacons.sort((b1, b2) -> Double.compare(b1.getDistance(), b2.getDistance()));
-
-                // 가까운 최대 6~8개 비콘만 사용
-                List<MinewBeacon> used = validBeacons.subList(0, Math.min(validBeacons.size(), 8));
-
-                currentPosition = calculateMultilaterationPosition(used);
-
-                Log.d("내위치", "다중 위치: (" + currentPosition[0] + ", " + currentPosition[1] + ")");
-            }
-        }
-        public void onUpdateBluetoothState(BluetoothState state) {
-            Log.d("블루투스 상태", "현재 상태: " + state.toString());
-        }
-        }
 
     private void syncFirebaseMembersToSQLite() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("members");
