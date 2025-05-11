@@ -26,7 +26,7 @@ public class MapActivity extends AppCompatActivity {
         positionDot = findViewById(R.id.position_dot);
         positionDot.setVisibility(View.GONE);  // 빨간 점 안 보이게 하기
         
-        mapImage = findViewById(R.id.map_image);
+        // mapImage = findViewById(R.id.map_image);
         mapCanvasView = findViewById(R.id.map_canvas);  // XML에 있는 View 연결
 
         // 검색 기능 연결
