@@ -28,9 +28,14 @@ public class MainActivity extends AppCompatActivity {
     private MinewBeaconManager beaconManager;
 
     private final Map<String, int[]> beaconMap = new HashMap<>() {{
-        put("C3:00:00:3F:97:D9", new int[]{7, 4});    // 비콘 6
-        put("C3:00:00:35:97:F0", new int[]{7, 19});  // 비콘 7
-        put("C3:00:00:3F:97:EF", new int[]{15, 12});   // 비콘 8
+        put("C3:00:00:3F:C5:A1", new int[]{1, 74});    // 비콘 1
+        put("C3:00:00:3F:C5:A2", new int[]{12, 68});  // 비콘 2
+        put("C3:00:00:3F:C5:A3", new int[]{33, 78});   // 비콘 3
+        put("C3:00:00:35:97:DA", new int[]{55, 68});    // 비콘 4
+        put("C3:00:00:35:97:D7", new int[]{71, 78});  // 비콘 5
+        put("C3:00:00:3F:97:D9", new int[]{91, 78});   // 비콘 6
+        put("C3:00:00:35:97:F0", new int[]{106, 68});  // 비콘 7
+        put("C3:00:00:3F:97:EF", new int[]{125, 65});   // 비콘 8
     }};
 
     @Override
@@ -153,11 +158,10 @@ public class MainActivity extends AppCompatActivity {
         public void onRangeBeacons(List<MinewBeacon> list) {
             if (list == null || list.isEmpty()) return;
 
-            MinewBeacon strongest = null;
-            String strongestMac = null;
-            double minAbsRssi = Double.MAX_VALUE;
-
             Log.d("비콘디버그", "==== 비콘 전체 RSSI 목록 ====");
+
+            List<PositionEstimator.BeaconData> usableBeacons = new ArrayList<>();
+
             for (MinewBeacon beacon : list) {
                 String mac = beacon.getMacAddress();
                 double rssi = beacon.getRssi();
@@ -165,24 +169,31 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d("비콘디버그", "MAC: " + mac + " | RSSI: " + rssi + " | 거리: " + String.format("%.2f", distance));
 
-                for (String key : beaconMap.keySet()) {
-                    if (key.equalsIgnoreCase(mac)) {
-                        double absRssi = Math.abs(rssi);  // 절댓값으로 비교
-                        if (absRssi < minAbsRssi) {
-                            minAbsRssi = absRssi;
-                            strongest = beacon;
-                            strongestMac = key;
-                        }
-                    }
+                if (beaconMap.containsKey(mac)) {
+                    usableBeacons.add(new PositionEstimator.BeaconData(mac, rssi, distance));
                 }
             }
 
-            if (strongest != null && strongestMac != null) {
-                int[] pos = beaconMap.get(strongestMac);
-                currentPosition = pos;
+            if (usableBeacons.size() >= 1) {
+                // RSSI 기준 정렬
+                usableBeacons.sort(Comparator.comparingDouble(b -> Math.abs(b.rssi)));
+                PositionEstimator.BeaconData anchor = usableBeacons.get(0);  // 가장 강한 비콘
 
-                Log.d("가장강한비콘", "선택된 MAC: " + strongestMac + " | RSSI: " + strongest.getRssi() + "dBm");
-                Log.d("디버그위치", "x: " + currentPosition[0] + ", y: " + currentPosition[1]);
+                // 가장 강한 비콘의 MAC, RSSI, 위치 출력
+                int[] anchorPos = beaconMap.get(anchor.mac);
+                Log.d("가장강한비콘디버그", " 가장 강한 비콘 MAC: " + anchor.mac + " | RSSI: " + anchor.rssi + "dBm");
+                Log.d("디버그위치", "가장 강한 비콘 위치 | x: " + anchorPos[0] + ", y: " + anchorPos[1]);
+
+                // 보정 위치 + 필터 적용
+                PositionEstimator.updatePositionWithBeacons(beaconMap, usableBeacons);
+
+                // 최종 위치 저장
+                MainActivity.currentPosition = new int[]{
+                        (int) Math.round(PositionEstimator.y),
+                        (int) Math.round(PositionEstimator.x)
+                };
+
+                Log.d("최종현위치디버그", "(a)보정 & (b)필터 결과 위치: " + Arrays.toString(currentPosition));
             }
         }
     }

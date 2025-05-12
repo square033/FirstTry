@@ -50,10 +50,14 @@ public class MapCanvasView extends View {
         tileMap = loadTileMapFromJson(context, "floor_4_B.tmj");
         loadTileBitmaps(context);
 
-        productMap.put("우유", new int[]{16, 61});
-        productMap.put("사과", new int[]{22, 85});
-        productMap.put("식빵", new int[]{117, 4});
-        productMap.put("샴푸", new int[]{130, 17});
+        productMap.put("ㅏ", new int[]{1, 74});    //
+        productMap.put("ㅑ", new int[]{12, 68});  //
+        productMap.put("ㅓ", new int[]{33, 78});   //
+        productMap.put("ㅕ", new int[]{55, 68});    //
+        productMap.put("ㅗ", new int[]{71, 78});  //
+        productMap.put("ㅛ", new int[]{91, 78});   //
+        productMap.put("ㅜ", new int[]{106, 68});  //
+        productMap.put("ㅣ", new int[]{125, 65});   //
     }
 
     private void putTile(int gid, int resId, int dp, Context context) {
