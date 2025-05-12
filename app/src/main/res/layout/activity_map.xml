@@ -1,46 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp"
-        tools:ignore="ExtraText">
+        android:padding="8dp">
 
         <EditText
             android:id="@+id/productSearchInput"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="상품명을 입력하세요"/>
-            android:textSize="18sp"
+            android:layout_weight="1"
+            android:hint="상품명을 입력하세요" />
+        android:textSize="18sp"
 
         <Button
             android:id="@+id/searchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/deep_navy"
-            android:textSize="20sp"
-            android:text="검색"/>
+            android:text="검색"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/arriveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="도착" />
+
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
+        android:gravity="center">
+        <!--
         <ImageView
             android:id="@+id/map_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/nn_mqp" />
-
+            android:src="@drawable/map" />
+         -->
 
         <com.example.firsttry.MapCanvasView
             android:id="@+id/map_canvas"
@@ -49,8 +56,8 @@
 
         <View
             android:id="@+id/position_dot"
-            android:layout_width="13dp"
-            android:layout_height="12dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:background="@drawable/red_dot"
             android:visibility="invisible" />
 

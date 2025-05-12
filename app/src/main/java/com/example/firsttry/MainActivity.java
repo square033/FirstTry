@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import java.util.Comparator;
 
 import android.content.Intent;
 
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 100;
     private MinewBeaconManager beaconManager;
     private String lastDetectedZone = null;
+    private final LinkedList<String> recentZones = new LinkedList<>();
+    private final int MIN_CONFIDENCE_COUNT = 5;
+    private String stableZone = null;  // 확정된 위치
+
 
 
 
@@ -48,42 +54,42 @@ public class MainActivity extends AppCompatActivity {
         put("C3:00:00:3F:C5:A3", "C");
         put("C3:00:00:35:97:DA", "D");
         put("C3:00:00:35:97:D7", "E");
-        put("C3:00:00:3F:97:D9", "F");
+        put("C3:00:00:35:97:D9", "F");
         put("C3:00:00:35:97:F0", "G");
-        put("C3:00:00:3F:97:EF", "H");
+        put("C3:00:00:35:97:EF", "H");
+
     }};
     private final HashMap<String, int[]> zoneGridMap = new HashMap<>() {{
         put("A", new int[]{1, 74});  // (y, x)
-        put("B", new int[]{11, 68});
-        put("C", new int[]{33, 75});
-        put("D", new int[]{65, 70});
-        put("E", new int[]{90, 76});
-        put("F", new int[]{125, 65});
-        put("G", new int[]{121, 50});
-        put("H", new int[]{120, 9});
+        put("B", new int[]{13, 74});
+        put("C", new int[]{29, 74});
+        put("D", new int[]{44, 74});
+        put("E", new int[]{55, 74});
+        put("F", new int[]{67, 74});
+        put("G", new int[]{77, 74});
+        put("H", new int[]{90, 74});
+
+        put("A-B", new int[]{6, 74});
+        put("B-C", new int[]{22, 74});
+        put("C-D", new int[]{36, 74});
+        put("D-E", new int[]{49, 74});
+        put("E-F", new int[]{61, 74});
+        put("F-G", new int[]{78, 74});
+        put("G-H", new int[]{84, 74});
     }};
+
 
     private class MyMinewBeaconManagerListener implements MinewBeaconManagerListener {
         @Override
-        public void onUpdateBluetoothState(BluetoothState bluetoothState) {
-
-        }
-
+        public void onUpdateBluetoothState(BluetoothState bluetoothState) {}
         @Override
-        public void onAppearBeacons(List<MinewBeacon> list) {
-
-        }
-
+        public void onAppearBeacons(List<MinewBeacon> list) {}
         @Override
-        public void onDisappearBeacons(List<MinewBeacon> list) {
-
-        }
-
+        public void onDisappearBeacons(List<MinewBeacon> list) {}
         @Override
         public void onRangeBeacons(List<MinewBeacon> beacons) {
             if (beacons == null || beacons.isEmpty()) return;
 
-            // 비콘 목록 중, 내가 정의한 것만 필터링
             List<MinewBeacon> validBeacons = new ArrayList<>();
             for (MinewBeacon beacon : beacons) {
                 if (beaconToZoneMap.containsKey(beacon.getMacAddress())) {
@@ -92,45 +98,102 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (!validBeacons.isEmpty()) {
-                // 가장 가까운 비콘 1개
                 Collections.sort(validBeacons, new Comparator<MinewBeacon>() {
                     @Override
                     public int compare(MinewBeacon b1, MinewBeacon b2) {
                         return Double.compare(b1.getDistance(), b2.getDistance());
                     }
                 });
-                MinewBeacon nearest = validBeacons.get(0);
-                String mac = nearest.getMacAddress();
+                String zone = beaconToZoneMap.get(validBeacons.get(0).getMacAddress());
 
-                String zone = beaconToZoneMap.get(mac);
-                if (zone != null) {
-                    int[] gridCoord = zoneGridMap.get(zone);
+                recentZones.add(zone);
+                if (recentZones.size() > 10) recentZones.removeFirst();
 
-                    Log.d("현재 위치", "가장 가까운 비콘은 " + mac + " → " + zone + " 구역입니다.");
-                    Log.d("현재 위치 좌표", "(" + gridCoord[1] + ", " + gridCoord[0] + ")");  // x, y
+                long count = 0;
+                for (String z : recentZones) {
+                    if (z.equals(zone)) count++;
+                }
+                if (count >= MIN_CONFIDENCE_COUNT && !zone.equals(stableZone)) {
+                    stableZone = zone;
                     lastDetectedZone = zone;
+                    int[] gridCoord = zoneGridMap.get(zone);
+                    updateLocation(gridCoord);
+                    Log.d("위치확정", "확정된 zone: " + zone);
+                }
 
-                    SharedPreferences prefs = getSharedPreferences("location_pref", MODE_PRIVATE);
-                    prefs.edit()
-                            .putInt("current_x", gridCoord[1])
-                            .putInt("current_y", gridCoord[0])
-                            .apply();
+                if (recentZones.size() >= 6) {
+                    // 1. 최근 6개에 대해 zone 등장 횟수 세기
+                    HashMap<String, Integer> zoneCount = new HashMap<>();
+                    for (int i = recentZones.size() - 6; i < recentZones.size(); i++) {
+                        String z = recentZones.get(i);
+                        zoneCount.put(z, zoneCount.getOrDefault(z, 0) + 1);
+                    }
 
+                    // 2. 특정 zone이 5회 이상 등장 → 확정
+                    for (String zoneKey : zoneCount.keySet()) {
+                        if (zoneCount.get(zoneKey) >= 5 && !zoneKey.equals(stableZone)) {
+                            stableZone = zoneKey;
+                            lastDetectedZone = zoneKey;
+                            int[] coord = zoneGridMap.get(zoneKey);
+                            updateLocation(coord);
+                            Log.d("위치확정", "확정된 zone (단일): " + zoneKey);
+                            return;
+                        }
+                    }
 
-                      }
+                    // 3. 2개 zone이 섞여서 각각 2회 이상 등장한 경우 → 중간 구역
+                    if (zoneCount.size() == 2) {
+                        List<String> topZones = new ArrayList<>(zoneCount.keySet());
+                        String z1 = topZones.get(0);
+                        String z2 = topZones.get(1);
+                        int c1 = zoneCount.get(z1);
+                        int c2 = zoneCount.get(z2);
+
+                        if (c1 >= 2 && c2 >= 2) {
+                            List<String> sorted = new ArrayList<>();
+                            sorted.add(z1);
+                            sorted.add(z2);
+                            Collections.sort(sorted);
+                            String midZoneKey = sorted.get(0) + "-" + sorted.get(1);  // A-B 형식
+
+                            if (zoneGridMap.containsKey(midZoneKey)) {
+                                stableZone = midZoneKey;
+                                lastDetectedZone = midZoneKey;
+                                int[] coord = zoneGridMap.get(midZoneKey);
+                                updateLocation(coord);
+                                Log.d("중간위치", "중간 zone: " + midZoneKey);
+                                return;
+                            }
+                        }
+                    }
+                }
+
             }
+        }
+        private void updateLocation(int[] coord) {
+            SharedPreferences prefs = getSharedPreferences("location_pref", MODE_PRIVATE);
+            prefs.edit().putInt("current_x", coord[1]).putInt("current_y", coord[0]).apply();
         }
 
     }
 
+
+    private int[] currentPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        checkAndRequestPermissions();
+
         // SharedPreferences는 한 번만 선언해서 아래 모두에서 재사용
         SharedPreferences prefs = getSharedPreferences("login_pref", MODE_PRIVATE);
+        int currentX = prefs.getInt("current_x", -1);
+        int currentY = prefs.getInt("current_y", -1);
+        currentPosition = new int[]{currentX, currentY};
+
+      //  Log.d("MapActivity", "현재 위치: (" + currentPosition[0] + ", " + currentPosition[1] + ")");
 
         // Firebase → SQLite 회원 정보 동기화
         syncFirebaseMembersToSQLite();
@@ -277,4 +340,3 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
-
