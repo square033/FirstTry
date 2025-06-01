@@ -49,7 +49,7 @@ SmartCart/
 ---
 
 ## 4. 주요 액티비티 설명
-1) Activity	설명
+### 1) Activity	설명
  - MainActivity	) 앱 메인 화면, 로그인 상태에 따라 UI 변경
  - LoginActivity, FullPhoneLoginActivity	) 전화번호 기반 인증
  - MapActivity	) 비콘 위치 기반 지도 뷰
@@ -61,14 +61,12 @@ SmartCart/
 ---
 
 ## 5. 실행 방법 (Build & Run)
-1) Android Studio에서 프로젝트 열기
-2) Run ▶ 버튼 클릭하여 에뮬레이터 또는 실기기에서 테스트
+### 1) Android Studio에서 프로젝트 열기
+### 2) Run ▶ 버튼 클릭하여 에뮬레이터 또는 실기기에서 테스트
 
 ---
 
 ## 6. 참고 및 주의사항
-얼굴 인식 시스템과 연동 시 반드시 Firebase 사용자 정보와 pickle DB를 동기화할 것
-
-QR 영수증은 JSON 형식 기반이며, 모바일 앱 외부에서 직접 디코딩도 가능
-
-실내 위치 측정은 BLE 환경에서 정확도가 달라질 수 있음
+### 얼굴 인식 시스템과 연동 시 반드시 Firebase 사용자 정보와 pickle DB를 동기화할 것
+### QR 영수증은 JSON 형식 기반이며, 모바일 앱 외부에서 직접 디코딩도 가능
+### 실내 위치 측정은 BLE 환경에서 정확도가 달라질 수 있음
