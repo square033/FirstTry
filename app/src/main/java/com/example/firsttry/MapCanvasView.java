@@ -45,7 +45,7 @@ public class MapCanvasView extends View {
         pathPaint.setStrokeCap(Paint.Cap.ROUND);
 
         markerBitmap = scaleBitmap(
-                BitmapFactory.decodeResource(getResources(), R.drawable.ic_cart), 16, context);
+                BitmapFactory.decodeResource(getResources(), R.drawable.ic_cart), 36, context);
         flagBitmap = scaleBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_flag), 16, context);
 
         tileMap = loadTileMapFromJson(context, "floor_4_B.tmj");
@@ -60,6 +60,11 @@ public class MapCanvasView extends View {
         productMap.put("ㅜ", new int[]{106, 68});
         productMap.put("ㅣ", new int[]{125, 65});
     }
+    // MapCanvasView.java
+    public void setProductMap(Map<String, int[]> map) {
+        this.productMap = map;
+    }
+
 
     private void putTile(int gid, int resId, int dp, Context context) {
         tileBitmaps.put(gid, scaleBitmap(BitmapFactory.decodeResource(getResources(), resId), dp, context));

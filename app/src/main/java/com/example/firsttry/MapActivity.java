@@ -50,36 +50,15 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        Button arriveButton = findViewById(R.id.arriveButton);
-        arriveButton.setOnClickListener(v -> {
-            String productName = prefs.getString("last_product_name", null);
 
-            if (productName != null) {
+
                 Map<String, int[]> productMap = new HashMap<>();
-                productMap.put("ㅏ", new int[]{1, 74});
-                productMap.put("ㅑ", new int[]{13, 68});
-                productMap.put("ㅓ", new int[]{33, 78});
-                productMap.put("ㅕ", new int[]{55, 68});
-                productMap.put("ㅗ", new int[]{71, 78});
-                productMap.put("ㅛ", new int[]{91, 78});
-                productMap.put("ㅜ", new int[]{106, 68});
-                productMap.put("ㅣ", new int[]{125, 65});
-
-                int[] coord = productMap.get(productName);
-                if (coord != null) {
-                    prefs.edit()
-                            .putInt("current_x", coord[1])
-                            .putInt("current_y", coord[0])
-                            .apply();
-
-                    Toast.makeText(this, "상품 위치로 이동 완료!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "상품 위치를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, "최근 검색한 상품이 없습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
+                productMap.put("생수", new int[]{1, 74});
+                productMap.put("장난감", new int[]{48, 72});
+                productMap.put("초코송이", new int[]{80, 72});
+                productMap.put("인형", new int[]{120, 72});
+                productMap.put("햄버거세트", new int[]{123, 15});
+                mapCanvasView.setProductMap(productMap);
 
     }
 

@@ -15,8 +15,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="상품명을 입력하세요" />
-        android:textSize="18sp"
+            android:hint="상품명을 입력하세요"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/searchButton"
@@ -26,12 +26,6 @@
             android:text="검색"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/arriveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="도착" />
 
     </LinearLayout>
 
@@ -39,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        android:gravity="center">
+
         <!--
         <ImageView
             android:id="@+id/map_image"

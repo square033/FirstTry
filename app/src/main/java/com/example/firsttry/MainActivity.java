@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +37,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+class KalmanFilter {
+    private double q = 0.0001;
+    private double r = 0.1;
+    private double x = 0;
+    private double p = 1;
+    private double k;
+
+    public double update(double measurement) {
+        p = p + q;
+        k = p / (p + r);
+        x = x + k * (measurement - x);
+        p = (1 - k) * p;
+        return x;
+    }
+
+    public void reset(double value) {
+        this.x = value;
+        this.p = 1;
+    }
+}
 
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 100;
@@ -44,6 +65,20 @@ public class MainActivity extends AppCompatActivity {
     private final LinkedList<String> recentZones = new LinkedList<>();
     private final int MIN_CONFIDENCE_COUNT = 5;
     private String stableZone = null;  // 확정된 위치
+    private final Map<String, KalmanFilter> rssiFilters = new HashMap<>();
+    private double getFilteredRssi(MinewBeacon beacon) {
+        String mac = beacon.getMacAddress();
+        KalmanFilter filter = rssiFilters.get(mac);
+
+        if (filter == null) {
+            filter = new KalmanFilter();
+            filter.reset(beacon.getRssi());
+            rssiFilters.put(mac, filter);
+        }
+
+        return filter.update(beacon.getRssi());
+    }
+
 
 
 
@@ -57,25 +92,40 @@ public class MainActivity extends AppCompatActivity {
         put("C3:00:00:35:97:D9", "F");
         put("C3:00:00:35:97:F0", "G");
         put("C3:00:00:35:97:EF", "H");
+        put("C3:00:00:3F:CB:0A", "I");
+        put("C3:00:00:3F:CB:0B", "J");
+        put("C3:00:00:3F:CB:0D", "K");
+        put("C3:00:00:35:97:1A", "L");
+        put("C3:00:00:35:97:19", "M");
 
     }};
     private final HashMap<String, int[]> zoneGridMap = new HashMap<>() {{
-        put("A", new int[]{1, 74});  // (y, x)
-        put("B", new int[]{13, 74});
-        put("C", new int[]{29, 74});
-        put("D", new int[]{44, 74});
-        put("E", new int[]{55, 74});
-        put("F", new int[]{67, 74});
-        put("G", new int[]{77, 74});
-        put("H", new int[]{90, 74});
+        put("E", new int[]{1, 74});  // (y, x)
+        put("F", new int[]{15, 74});
+        put("G", new int[]{31, 74});
+        put("H", new int[]{45, 74});
+        put("I", new int[]{61, 74});
+        put("J", new int[]{75, 74});
+        put("K", new int[]{91, 74});
+        put("L", new int[]{105, 74});
+        put("M", new int[]{118, 74}); //여기까지 강의실쪽
+        put("A", new int[]{120, 60});
+        put("B", new int[]{122, 45});
+        put("C", new int[]{128, 30});
+        put("D", new int[]{128, 15});
 
-        put("A-B", new int[]{6, 74});
-        put("B-C", new int[]{22, 74});
-        put("C-D", new int[]{36, 74});
-        put("D-E", new int[]{49, 74});
-        put("E-F", new int[]{61, 74});
-        put("F-G", new int[]{78, 74});
-        put("G-H", new int[]{84, 74});
+//        put("E-F", new int[]{7, 74});
+//        put("F-G", new int[]{23, 74});
+//        put("G-H", new int[]{38, 74});
+//        put("H-I", new int[]{53, 74});
+//        put("I-J", new int[]{68, 74});
+//        put("J-K", new int[]{83, 74});
+//        put("K-L", new int[]{98, 74});
+//        put("L-M", new int[]{113, 74});
+//        put("M-A", new int[]{121, 78});
+//        put("A-B", new int[]{121, 52});
+//        put("B-C", new int[]{125, 37});
+//        put("C-D", new int[]{128, 23});
     }};
 
 
@@ -101,37 +151,33 @@ public class MainActivity extends AppCompatActivity {
                 Collections.sort(validBeacons, new Comparator<MinewBeacon>() {
                     @Override
                     public int compare(MinewBeacon b1, MinewBeacon b2) {
-                        return Double.compare(b1.getDistance(), b2.getDistance());
+                        double rssi1 = getFilteredRssi(b1);
+                        double rssi2 = getFilteredRssi(b2);
+                        return Double.compare(rssi2, rssi1); // 높은 RSSI가 우선
                     }
                 });
+
+
                 String zone = beaconToZoneMap.get(validBeacons.get(0).getMacAddress());
 
                 recentZones.add(zone);
-                if (recentZones.size() > 10) recentZones.removeFirst();
-
-                long count = 0;
-                for (String z : recentZones) {
-                    if (z.equals(zone)) count++;
-                }
-                if (count >= MIN_CONFIDENCE_COUNT && !zone.equals(stableZone)) {
-                    stableZone = zone;
-                    lastDetectedZone = zone;
-                    int[] gridCoord = zoneGridMap.get(zone);
-                    updateLocation(gridCoord);
-                    Log.d("위치확정", "확정된 zone: " + zone);
+                if (recentZones.size() > 10) {
+                    recentZones.removeFirst();
                 }
 
-                if (recentZones.size() >= 6) {
-                    // 1. 최근 6개에 대해 zone 등장 횟수 세기
+                // 최근 8개 분석
+                if (recentZones.size() >= 7) {
                     HashMap<String, Integer> zoneCount = new HashMap<>();
-                    for (int i = recentZones.size() - 6; i < recentZones.size(); i++) {
+                    for (int i = recentZones.size() - 7; i < recentZones.size(); i++) {
                         String z = recentZones.get(i);
-                        zoneCount.put(z, zoneCount.getOrDefault(z, 0) + 1);
+                        int currentCount = zoneCount.containsKey(z) ? zoneCount.get(z) : 0;
+                        zoneCount.put(z, currentCount + 1);
                     }
 
-                    // 2. 특정 zone이 5회 이상 등장 → 확정
+
+                    // 1. 단일 zone이 8회 → 해당 zone 확정
                     for (String zoneKey : zoneCount.keySet()) {
-                        if (zoneCount.get(zoneKey) >= 5 && !zoneKey.equals(stableZone)) {
+                        if (zoneCount.get(zoneKey) >= 7&& !zoneKey.equals(stableZone)) {
                             stableZone = zoneKey;
                             lastDetectedZone = zoneKey;
                             int[] coord = zoneGridMap.get(zoneKey);
@@ -141,34 +187,34 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    // 3. 2개 zone이 섞여서 각각 2회 이상 등장한 경우 → 중간 구역
-                    if (zoneCount.size() == 2) {
-                        List<String> topZones = new ArrayList<>(zoneCount.keySet());
-                        String z1 = topZones.get(0);
-                        String z2 = topZones.get(1);
-                        int c1 = zoneCount.get(z1);
-                        int c2 = zoneCount.get(z2);
-
-                        if (c1 >= 2 && c2 >= 2) {
-                            List<String> sorted = new ArrayList<>();
-                            sorted.add(z1);
-                            sorted.add(z2);
-                            Collections.sort(sorted);
-                            String midZoneKey = sorted.get(0) + "-" + sorted.get(1);  // A-B 형식
-
-                            if (zoneGridMap.containsKey(midZoneKey)) {
-                                stableZone = midZoneKey;
-                                lastDetectedZone = midZoneKey;
-                                int[] coord = zoneGridMap.get(midZoneKey);
-                                updateLocation(coord);
-                                Log.d("중간위치", "중간 zone: " + midZoneKey);
-                                return;
-                            }
-                        }
-                    }
+//                    // 2. 두 개 zone이 3회 이상 등장 → 중간 zone 고려
+//                    if (zoneCount.size() == 2) {
+//                        List<String> topZones = new ArrayList<>(zoneCount.keySet());
+//                        String z1 = topZones.get(0);
+//                        String z2 = topZones.get(1);
+//                        int c1 = zoneCount.get(z1);
+//                        int c2 = zoneCount.get(z2);
+//
+//                        if (c1 >= 3 && c2 >= 3) {
+//                            List<String> sorted = new ArrayList<>();
+//                            sorted.add(z1);
+//                            sorted.add(z2);
+//                            Collections.sort(sorted);
+//                            String midZoneKey = sorted.get(0) + "-" + sorted.get(1);  // A-B 형식
+//
+//                            if (zoneGridMap.containsKey(midZoneKey) && !midZoneKey.equals(stableZone)) {
+//                                stableZone = midZoneKey;
+//                                lastDetectedZone = midZoneKey;
+//                                int[] coord = zoneGridMap.get(midZoneKey);
+//                                updateLocation(coord);
+//                                Log.d("중간위치", "중간 zone: " + midZoneKey);
+//                                return;
+//                            }
+//                        }
+//                    }
                 }
-
             }
+
         }
         private void updateLocation(int[] coord) {
             SharedPreferences prefs = getSharedPreferences("location_pref", MODE_PRIVATE);
@@ -298,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
     private void startBeaconScan() {
         beaconManager = MinewBeaconManager.getInstance(this);
         beaconManager.startService();
-        beaconManager.setRangeInterval(500);
+        beaconManager.setRangeInterval(300);
         beaconManager.setMinewbeaconManagerListener(new MyMinewBeaconManagerListener());
         beaconManager.startScan();
     }
