@@ -50,13 +50,16 @@ SmartCart/
 
 ## 4. 주요 액티비티 설명
 ### 1) Activity	설명
- - MainActivity	) 앱 메인 화면, 로그인 상태에 따라 UI 변경
- - LoginActivity, FullPhoneLoginActivity	) 전화번호 기반 인증
- - MapActivity	) 비콘 위치 기반 지도 뷰
- - QRScanActivity	) QR 영수증 스캔 및 결제
- - PaymentActivity	) 결제 완료 → QR 생성 및 정보 Firebase 저장
- - ReceiptActivity ) 결제 정보 시각화
- - MypageActivity	) 사용자 개인 정보 확인 (이름, 적립금, 구매 기록 등)
+| Activity 이름              | 설명                                                                 |
+|---------------------------|----------------------------------------------------------------------|
+| `MainActivity`            | 앱 메인 화면. 로그인 여부에 따라 UI가 동적으로 변경됨                |
+| `LoginActivity`           | 전화번호를 통한 로그인 처리 (간단 로그인)                             |
+| `FullPhoneLoginActivity`  | 전화번호 + 비밀번호 기반 로그인 처리 (보안 강화 버전)                |
+| `MapActivity`             | 비콘 기반으로 사용자의 실내 위치를 지도 상에 표시                    |
+| `QRScanActivity`          | QR 영수증을 스캔하여 결제 처리                                       |
+| `PaymentActivity`         | 장바구니 결제 → QR 코드 생성 → 결제 정보 Firebase에 저장              |
+| `ReceiptActivity`         | 결제 내역 및 전자 영수증을 시각적으로 확인 가능                       |
+| `MypageActivity`          | 사용자 개인 정보, 적립금, 구매 이력 등을 열람 가능                    |
 
 ---
 
